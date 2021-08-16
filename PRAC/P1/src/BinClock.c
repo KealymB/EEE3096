@@ -25,7 +25,7 @@ int RTC; //Holds the RTC instance
 
 int HH,MM,SS;
 
-void writeTime(int hour, int min, int sec);
+void writeTime();
 void readTime(void);
 
 // Clean up function to avoid damaging used pins
@@ -189,10 +189,10 @@ void readTime(void){
 /* 
  * Read time from RTC, convert and set global variables
  */
-void writeTime(int hour, int min, int sec){
-	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, decCompensation(hour));
-	wiringPiI2CWriteReg8(RTC, MIN_REGISTER, decCompensation(min));
-	wiringPiI2CWriteReg8(RTC, SEC_REGISTER, decCompensation(sec));
+void writeTime(){
+	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, decCompensation(hours));
+	wiringPiI2CWriteReg8(RTC, MIN_REGISTER, decCompensation(mins));
+	wiringPiI2CWriteReg8(RTC, SEC_REGISTER, decCompensation(secs));
 }
 
 
@@ -208,11 +208,12 @@ void hourInc(void){
 
 	if (interruptTime - lastInterruptTime>200){
 		printf("Interrupt 1 triggered, %x\n", hours);
+
 		readTime(); //Fetch RTC Time
 		
 		hFormat(hours+1);//Increase hours by 1, ensuring not to overflow
 
-		writeTime(hours,mins,secs);//Write hours back to the RTC
+		writeTime();//Write hours back to the RTC
 	}
 	lastInterruptTime = interruptTime;
 }
