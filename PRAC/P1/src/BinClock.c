@@ -25,6 +25,8 @@ int RTC; //Holds the RTC instance
 
 int HH,MM,SS;
 
+void writeTime(int hour, int min, int sec);
+void readTime(void);
 
 // Clean up function to avoid damaging used pins
 void CleanUp(int sig){
