@@ -190,7 +190,7 @@ void readTime(void){
  * Read time from RTC, convert and set global variables
  */
 void writeTime(int hour, int min, int sec){
-	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, decCompensation(hour)+TIMEZONE);
+	wiringPiI2CWriteReg8(RTC, HOUR_REGISTER, decCompensation(hour));
 	wiringPiI2CWriteReg8(RTC, MIN_REGISTER, decCompensation(min));
 	wiringPiI2CWriteReg8(RTC, SEC_REGISTER, decCompensation(sec));
 }
