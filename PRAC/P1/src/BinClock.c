@@ -104,6 +104,7 @@ int main(void){
 		delay(500); //milliseconds
 		digitalWrite(LED, LOW);
 		delay(500);
+		hourInc();
 	}
 	return 0;
 }
