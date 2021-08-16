@@ -210,7 +210,7 @@ void hourInc(void){
 		printf("Interrupt 1 triggered, %x\n", hours);
 		readTime(); //Fetch RTC Time
 		
-		hours = hFormat(hours+1);//Increase hours by 1, ensuring not to overflow
+		hFormat(hours+1);//Increase hours by 1, ensuring not to overflow
 
 		writeTime(hours,mins,secs);//Write hours back to the RTC
 	}
@@ -230,7 +230,7 @@ void minInc(void){
 		printf("Interrupt 2 triggered, %x\n", mins);
 		readTime(); //Fetch RTC Time
 		
-		hours = hFormat(hours-1);//Increase hours by 1, ensuring not to overflow
+		hFormat(hours-1);//Increase hours by 1, ensuring not to overflow
 
 		writeTime(hours,mins,secs);//Write hours back to the RTC
 	}
