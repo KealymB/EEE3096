@@ -211,7 +211,7 @@ void hourInc(void){
 
 		readTime(); //Fetch RTC Time
 		
-		hFormat(hours+1);//Increase hours by 1, ensuring not to overflow
+		hours = hFormat(hours+1);//Increase hours by 1, ensuring not to overflow
 
 		writeTime();//Write hours back to the RTC
 	}
