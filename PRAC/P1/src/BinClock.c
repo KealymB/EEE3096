@@ -32,8 +32,8 @@ void readTime(void);
 void CleanUp(int sig){
 	printf("Cleaning up\n");
 
-	digitalWrite(LED, LOW);	//Set LED to low then input mode
-	//Logic here
+	//Set LED to low then input mode
+	digitalWrite(LED, LOW);
 
 
 	for (int j=0; j < sizeof(BTNS)/sizeof(BTNS[0]); j++) {
@@ -55,9 +55,8 @@ void initGPIO(void){
 
 
 	RTC = wiringPiI2CSetup(RTCAddr); //Set up the RTC
-
+	//Set LED as output
 	pinMode(LED, OUTPUT);
-	//Write your Logic here
 
 	printf("LED and RTC done\n");
 
@@ -69,8 +68,7 @@ void initGPIO(void){
 
 	//Attach interrupts to Buttons
 	//Write your logic here
-	wiringPiISR(BTNS[0], INT_EDGE_RISING,  void (hourInc())(void));
-
+	wiringPiISR(BTNS[0], INT_EDGE_FALLING, &hourInc);
 
 	printf("BTNS done\n");
 	printf("Setup done\n");
