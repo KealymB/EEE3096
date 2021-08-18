@@ -26,7 +26,7 @@ int RTC; //Holds the RTC instance
 int HH,MM,SS;
 
 void writeTime();
-void readTime(void);
+void readTime();
 
 // Clean up function to avoid damaging used pins
 void CleanUp(int sig){
@@ -178,8 +178,8 @@ int decCompensation(int units){
 /* 
  * Read time from RTC, convert and set global variables
  */
-void readTime(void){
-	hours =  hexCompensation(wiringPiI2CReadReg8(RTC, HOUR_REGISTER));
+void readTime(){
+	hours = hexCompensation(wiringPiI2CReadReg8(RTC, HOUR_REGISTER));
 	mins = hexCompensation(wiringPiI2CReadReg8(RTC, MIN_REGISTER));
 	secs = hexCompensation(wiringPiI2CReadReg8(RTC, SEC_REGISTER));
 }
@@ -230,11 +230,7 @@ void minInc(void){
 
 		readTime(); //Fetch RTC Time
 
-		if(mins-1 < 0){ //decrease min by 1
-			mins = 59;
-		}else{
-			mins -= 1;
-		}
+		mins=(mins+1)%60;
 
 		writeTime();//Write hours back to the RTC
 	}
