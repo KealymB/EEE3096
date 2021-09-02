@@ -68,9 +68,11 @@ def setup():
     GPIO.setup(btn_submit, GPIO.IN, pull_up_down=GPIO.PUD_UP) # SETUP Buttons
     GPIO.setup(btn_increase, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
-    #GPIO.setup(buzzer, GPIO.OUT)
-    # Setup regular GPIO
-    PWMLED = GPIO.PWM(LED_accuracy, 1000)		#create PWM instance with frequency
+    GPIO.setup(buzzer, GPIO.OUT)# Setup regular GPIO
+    GPIO.setup(LED_accuracy,GPIO.OUT)
+    
+    #create PWM instance with frequency
+    PWMLED = GPIO.PWM(LED_accuracy, 1000)		
     PWMLED.start(0)
 
     # Setup debouncing and callbacks
