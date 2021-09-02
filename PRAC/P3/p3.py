@@ -63,10 +63,15 @@ def display_scores(count, raw_data):
 
 # Setup Pins
 def setup():
-    # Setup board mode
-    # Setup regular GPIO
+    GPIO.setmode(GPIO.BOARD)# Setup board mode
+    GPIO.setmode(GPIO.BCM)# Setup regular GPIO
     # Setup PWM channels
-    # Setup debouncing and callbacks
+    GPIO.setup(btn_submit, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Setup debouncing and callbacks
+    GPIO.setup(btn_increase, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
+
+    for LEDPIN in LED_value :   #sets LED as output
+        GPIO.setup(LEDPIN, GPIO.OUT)
+        GPIO.output(LEDPIN, GPIO.HIGH) # turns on all LEDS as a test
     pass
 
 
