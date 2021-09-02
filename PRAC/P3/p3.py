@@ -6,6 +6,10 @@ import os
 
 # some global variables that need to change as we run the program
 end_of_game = None  # set if the user wins or ends the game
+guess = 0
+PWMLED = None
+BUZZER = None
+value = 0
 
 # DEFINE THE PINS USED HERE
 LED_value = [11, 13, 15]
@@ -142,6 +146,10 @@ def btn_guess_pressed(channel):
 
 # LED Brightness
 def accuracy_leds():
+    if guess <= value:
+        PWMLED.ChangeDutyCycle(guess/value*100)
+    else:
+        PWMLED.ChangeDutyCycle(100-value/guess*100+100)
     # Set the brightness of the LED based on how close the guess is to the answer
     # - The % brightness should be directly proportional to the % "closeness"
     # - For example if the answer is 6 and a user guesses 4, the brightness should be at 4/6*100 = 66%
