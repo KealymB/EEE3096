@@ -11,6 +11,7 @@ PWMLED = None
 BUZZER = None
 value = 0
 
+
 # DEFINE THE PINS USED HERE
 LED_value = [11, 13, 15]
 LED_accuracy = 32
@@ -130,6 +131,10 @@ def btn_increase_pressed(channel):
 
 # Guess button
 def btn_guess_pressed(channel):
+    start_time = time.time() 
+    buttonTime = time.time() - start_time
+    if buttonTime >= 1:
+        print("KIK")
     # If they've pressed and held the button, clear up the GPIO and take them back to the menu screen
     # Compare the actual value with the user value displayed on the LEDs
     # Change the PWM LED
