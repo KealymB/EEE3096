@@ -65,15 +65,19 @@ def display_scores(count, raw_data):
 def setup():
     GPIO.setmode(GPIO.BOARD)# Setup board mode
 
-    GPIO.setup(btn_submit, GPIO.IN, pull_up_down=GPIO.PUD_UP) # SETUP Buttons
+    # SETUP Buttons
+    GPIO.setup(btn_submit, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
     GPIO.setup(btn_increase, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
-    GPIO.setup(buzzer, GPIO.OUT)# Setup regular GPIO
+    # Setup regular GPIO
+    GPIO.setup(buzzer, GPIO.OUT)
     GPIO.setup(LED_accuracy,GPIO.OUT)
-    
+
     #create PWM instance with frequency
     PWMLED = GPIO.PWM(LED_accuracy, 1000)		
-    PWMLED.start(0)
+    PWMLED.start(50)
+    BUZZER = GPIO.PWM(buzzer, 1000)		
+    BUZZER.start(50)
 
     # Setup debouncing and callbacks
     GPIO.add_event_detect(btn_increase, GPIO.RISING, callback=btn_increase_pressed, bouncetime=200)  # add rising edge detection on a button increase
