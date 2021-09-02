@@ -12,7 +12,7 @@ LED_value = [11, 13, 15]
 LED_accuracy = 32
 btn_submit = 16
 btn_increase = 18
-buzzer = None
+buzzer = 33
 eeprom = ES2EEPROMUtils.ES2EEPROM()
 
 
@@ -67,8 +67,11 @@ def setup():
 
     GPIO.setup(btn_submit, GPIO.IN, pull_up_down=GPIO.PUD_UP) # SETUP Buttons
     GPIO.setup(btn_increase, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
+
+    GPIO.setup(buzzer, GPIO.OUT)
     # Setup regular GPIO
-    # Setup PWM channels
+    PWMLED = GPIO.PWM(LED_accuracy, 1000)		#create PWM instance with frequency
+    PWMLED.start(0)
 
     # Setup debouncing and callbacks
     GPIO.add_event_detect(btn_increase, GPIO.RISING, callback=btn_increase_pressed, bouncetime=200)  # add rising edge detection on a button increase
@@ -109,7 +112,6 @@ def generate_number():
 
 # Increase button pressed
 def btn_increase_pressed(channel):
-    GPIO.output(LED_value[0], GPIO.LOW) # turns off first LED as a test
     # Increase the value shown on the LEDs
     # You can choose to have a global variable store the user's current guess, 
     # or just pull the value off the LEDs when a user makes a guess
