@@ -64,10 +64,15 @@ def display_scores(count, raw_data):
 # Setup Pins
 def setup():
     GPIO.setmode(GPIO.BOARD)# Setup board mode
+
+    GPIO.setup(btn_submit, GPIO.IN, pull_up_down=GPIO.PUD_UP) # SETUP Buttons
+    GPIO.setup(btn_increase, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
     # Setup regular GPIO
     # Setup PWM channels
-    GPIO.setup(btn_submit, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Setup debouncing and callbacks
-    GPIO.setup(btn_increase, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
+
+    # Setup debouncing and callbacks
+    GPIO.add_event_detect(btn_increase, GPIO.RISING, callback=btn_increase_pressed, bouncetime=200)  # add rising edge detection on a button increase
+    GPIO.add_event_detect(btn_submit, GPIO.RISING, callback=btn_guess_pressed, bouncetime=200)  # add rising edge detection on a button submit
 
     for LEDPIN in LED_value :   #sets LED as output
         GPIO.setup(LEDPIN, GPIO.OUT)
@@ -104,6 +109,7 @@ def generate_number():
 
 # Increase button pressed
 def btn_increase_pressed(channel):
+    GPIO.output(LED_value[0], GPIO.LOW) # turns off first LED as a test
     # Increase the value shown on the LEDs
     # You can choose to have a global variable store the user's current guess, 
     # or just pull the value off the LEDs when a user makes a guess
