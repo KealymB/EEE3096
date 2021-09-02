@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import random
 import ES2EEPROMUtils
 import os
+import time
 
 # some global variables that need to change as we run the program
 end_of_game = None  # set if the user wins or ends the game
