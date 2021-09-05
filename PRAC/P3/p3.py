@@ -8,7 +8,7 @@ import time
 # some global variables that need to change as we run the program
 end_of_game = None  # set if the user wins or ends the game
 guess = 0
-PWMLED = None
+ALED = None
 BUZZER = None
 value = 0
 
@@ -37,7 +37,7 @@ def welcome():
 
 # Print the game menu
 def menu():
-    global end_of_game
+    global end_of_game, value
     option = input("Select an option:   H - View High Scores     P - Play Game       Q - Quit\n")
     option = option.upper()
     if option == "H":
@@ -51,6 +51,7 @@ def menu():
         print("Use the buttons on the Pi to make and submit your guess!")
         print("Press and hold the guess button to cancel your game")
         value = generate_number()
+        print(value)
         while not end_of_game:
             pass
     elif option == "Q":
@@ -69,6 +70,7 @@ def display_scores(count, raw_data):
 
 # Setup Pins
 def setup():
+    global ALED, BUZZER
     GPIO.setmode(GPIO.BOARD)# Setup board mode
 
     # SETUP Buttons
@@ -77,21 +79,20 @@ def setup():
 
     # Setup regular GPIO
     GPIO.setup(buzzer, GPIO.OUT)
-    GPIO.setup(LED_accuracy,GPIO.OUT)
 
     #create PWM instance with frequency
-    PWMLED = GPIO.PWM(LED_accuracy, 1000)		
-    PWMLED.start(50)
-    BUZZER = GPIO.PWM(buzzer, 1000)		
-    BUZZER.start(50)
+    if BUZZER is None:
+        BUZZER = GPIO.PWM(buzzer, 1000)		
+
+    ALED = PWMLED(12)	## sets GPIO12 V 32 as PWM LED
 
     # Setup debouncing and callbacks
-    GPIO.add_event_detect(btn_increase, GPIO.RISING, callback=btn_increase_pressed, bouncetime=200)  # add rising edge detection on a button increase
-    GPIO.add_event_detect(btn_submit, GPIO.RISING, callback=btn_guess_pressed, bouncetime=200)  # add rising edge detection on a button submit
+    GPIO.add_event_detect(btn_increase, GPIO.FALLING, callback=btn_increase_pressed, bouncetime=500)  # add rising edge detection on a button increase
+    GPIO.add_event_detect(btn_submit, GPIO.FALLING, callback=btn_guess_pressed, bouncetime=500)  # add rising edge detection on a button submit
 
     for LEDPIN in LED_value :   #sets LED as output
         GPIO.setup(LEDPIN, GPIO.OUT)
-        GPIO.output(LEDPIN, GPIO.HIGH) # turns on all LEDS as a test
+        GPIO.output(LEDPIN, GPIO.LOW)
     pass
 
 
@@ -124,52 +125,93 @@ def generate_number():
 
 # Increase button pressed
 def btn_increase_pressed(channel):
+    global guess
     # Increase the value shown on the LEDs
-    # You can choose to have a global variable store the user's current guess, 
-    # or just pull the value off the LEDs when a user makes a guess
+    if guess>=7:
+        guess=1
+    else:
+        guess+=1
+    print(guess)
+    GPIO.output(LED_value[0], guess & 0x01)
+    GPIO.output(LED_value[1], guess & 0x02)
+    GPIO.output(LED_value[2], guess & 0x04)
     pass
 
 
 # Guess button
 def btn_guess_pressed(channel):
-    start_time = time.time() 
-    buttonTime = time.time() - start_time
-    if buttonTime >= 1:
-        print("KIK")
+    global guess, value
+    start = time.time()
+    backed = False
+
     # If they've pressed and held the button, clear up the GPIO and take them back to the menu screen
+    while GPIO.input(btn_submit) == GPIO.LOW:
+        time.sleep(0.01)
+        length = time.time() - start
+
+        if length > 1:
+            print("BACK")
+            GPIO.cleanup()
+            setup() # fix no debounce thing...
+            menu()
+            backed = True
+            break
+            
     # Compare the actual value with the user value displayed on the LEDs
-    # Change the PWM LED
-    # if it's close enough, adjust the buzzer
-    # if it's an exact guess:
-    # - Disable LEDs and Buzzer
-    # - tell the user and prompt them for a name
-    # - fetch all the scores
-    # - add the new score
-    # - sort the scores
-    # - Store the scores back to the EEPROM, being sure to update the score count
+    print(guess)
+    print(value)
+    if guess != value and not backed:
+        # if it's close enough, adjust the buzzer
+        # Change the PWM LED
+        accuracy_leds()
+        trigger_buzzer()
+    elif guess == value and not backed:
+        # if it's an exact guess:
+        # - Disable LEDs and Buzzer
+        # - tell the user and prompt them for a name
+        # - fetch all the scores
+        # - add the new score
+        # - sort the scores
+        # - Store the scores back to the EEPROM, being sure to update the score count
+        GPIO.cleanup() 
+        name = input("YOURE AMAZING, enter your name:\n")
+        name = name.upper()
+        if len(name) > 3:
+            name = name[0:3]
+        print(name)
     pass
 
 
 # LED Brightness
 def accuracy_leds():
-    if guess <= value:
-        PWMLED.ChangeDutyCycle(guess/value*100)
-    else:
-        PWMLED.ChangeDutyCycle(100-value/guess*100+100)
+    global guess, ALED, value
     # Set the brightness of the LED based on how close the guess is to the answer
     # - The % brightness should be directly proportional to the % "closeness"
     # - For example if the answer is 6 and a user guesses 4, the brightness should be at 4/6*100 = 66%
     # - If they guessed 7, the brightness would be at ((8-7)/(8-6)*100 = 50%
+    print((value - guess))
+    if (value - guess) < 0 :
+        ALED.value = guess/value*100
+    else:
+        ALED.value = 100-value/guess*100+100
     pass
 
 # Sound Buzzer
 def trigger_buzzer():
+    global guess, BUZZER, value
     # The buzzer operates differently from the LED
     # While we want the brightness of the LED to change(duty cycle), we want the frequency of the buzzer to change
     # The buzzer duty cycle should be left at 50%
+
     # If the user is off by an absolute value of 3, the buzzer should sound once every second
     # If the user is off by an absolute value of 2, the buzzer should sound twice every second
     # If the user is off by an absolute value of 1, the buzzer should sound 4 times a second
+
+    if abs(guess-value) == 3:
+        BUZZER.ChangeFrequency(1)
+        BUZZER.start(50)
+        #elif abs(guess-value) == 2:
+        #elif abs(guess-value) == 1:
     pass
 
 

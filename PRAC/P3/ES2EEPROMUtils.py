@@ -15,7 +15,7 @@ class ES2EEPROM:
         self.bus = bus
         self.address = address
 
-    def write_block(self, start_block, data, bs=32, sleep_time=0.01):
+    def write_block(self, start_block, data, bs=32, sleep_time=0.1):
         """
         Write data in blocks, starting at pos start_block.
 
@@ -116,20 +116,20 @@ class ES2EEPROM:
         """
 
         # First 4 bytes contain how many scores there are
-        self.write_block(0, [4])
-        scores = [["ChB", 5], ["Ada", 7], ["LSu", 4], ["EEE", 8]]
+        scores = [["ChB", 5], ["EEE", 9], ["LSu", 4]]
         scores.sort(key=lambda x: x[1])
         data_to_write = []
+        data_to_write.append(3)
         for score in scores:
             # get the string
             for letter in score[0]:
                 data_to_write.append(ord(letter))
             data_to_write.append(score[1])
-        self.write_block(1, data_to_write)
+        self.write_block(0, data_to_write)
 
 
 if __name__ == "__main__":
+    print("ran")
     eeprom = ES2EEPROM()
     eeprom.clear(4096)
     eeprom.populate_mock_scores()
-
