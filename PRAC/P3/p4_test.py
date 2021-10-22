@@ -109,8 +109,6 @@ def guessHeld():
     end()
     setup()
     menu()
-    #code to go back...
-    # If they've pressed and held the button, clear up the GPIO and take them back to the menu screen
 
 def guessPressed():
     global was_held, playing
@@ -178,7 +176,6 @@ def increaseNum():
     # Increase the value shown on the LEDs
     # You can choose to have a global variable store the user's current guess, 
     # or just pull the value off the LEDs when a user makes a guess
-
     if guess>=7:
         guess=0
     else:
